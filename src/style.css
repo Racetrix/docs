@@ -1,0 +1,36 @@
+:root {
+  /* 定义配色变量 */
+  --race-green: #00ff9d;
+  /* 荧光赛车绿，用于高亮和按钮 */
+  --race-green-dim: #00b36e;
+  /* 暗绿色，用于次要元素 */
+  --bg-black: #0a0a0a;
+  /* 深邃黑背景 */
+  --bg-panel: #161616;
+  /* 卡片背景 */
+  --text-main: #ffffff;
+  --text-muted: #888888;
+}
+
+body {
+  background-color: var(--bg-black);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+  /* 防止动画导致横向滚动条 */
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--race-green-dim);
+  border-radius: 4px;
+}

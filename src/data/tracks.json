@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "珠海国际赛车场 (ZIC)",
+        "image": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1000&auto=format&fit=crop",
+        "province": "广东省",
+        "city": "珠海市",
+        "author": "Lition",
+        "createTime": "2025-12-10",
+        "length": "4.3 km",
+        "corners": 14,
+        "downloads": 1205
+    },
+    {
+        "id": 2,
+        "name": "上海国际赛车场 (F1)",
+        "image": "https://images.unsplash.com/photo-1532906619279-a764d89a7702?q=80&w=1000&auto=format&fit=crop",
+        "province": "上海市",
+        "city": "嘉定区",
+        "author": "Racetrix Official",
+        "createTime": "2025-11-05",
+        "length": "5.4 km",
+        "corners": 16,
+        "downloads": 8999
+    },
+    {
+        "id": 3,
+        "name": "广东国际赛车场 (GIC)",
+        "image": "https://images.unsplash.com/photo-1511994714008-b6d68a8b32a2?q=80&w=1000&auto=format&fit=crop",
+        "province": "广东省",
+        "city": "肇庆市",
+        "author": "TrackMaster",
+        "createTime": "2026-01-02",
+        "length": "2.8 km",
+        "corners": 13,
+        "downloads": 450
+    },
+    {
+        "id": 4,
+        "name": "绍兴浙江国际赛车场",
+        "image": "https://images.unsplash.com/photo-1621285853634-713b8dd6b5fd?q=80&w=1000&auto=format&fit=crop",
+        "province": "浙江省",
+        "city": "绍兴市",
+        "author": "SpeedDemon",
+        "createTime": "2025-10-20",
+        "length": "3.2 km",
+        "corners": 16,
+        "downloads": 670
+    }
+]

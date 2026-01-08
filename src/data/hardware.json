@@ -1,0 +1,77 @@
+[
+    {
+        "id": "esp32-basic",
+        "name": "Racetrix Core / ESP32",
+        "version": "v1.2",
+        "description": "入门首选方案，成本低廉，支持蓝牙直连 RaceChrono。",
+        "author": "Lition",
+        "github": "https://github.com/your-repo/esp32-core",
+        "core": {
+            "type": "MCU",
+            "model": "ESP32-WROOM-32"
+        },
+        "gpsOptions": [
+            "Beitian BN-180",
+            "Beitian BN-220",
+            "Ublox NEO-6M"
+        ],
+        "imuOptions": [
+            "MPU6050 (推荐)",
+            "ICM-20948"
+        ],
+        "others": [
+            "SD Card Module",
+            "LED Status Light"
+        ],
+        "difficulty": "Easy"
+    },
+    {
+        "id": "stm32-pro",
+        "name": "Racetrix Pro / STM32",
+        "version": "v2.0 Beta",
+        "description": "高性能方案，更高的采样率和更精准的时间同步。",
+        "author": "GeekDriver",
+        "github": "https://github.com/your-repo/stm32-pro",
+        "core": {
+            "type": "MCU",
+            "model": "STM32F401 / F411"
+        },
+        "gpsOptions": [
+            "Ublox M10 (25Hz)",
+            "Beitian BN-880"
+        ],
+        "imuOptions": [
+            "BNO055 (9轴)",
+            "BMI160"
+        ],
+        "others": [
+            "OLED 0.96 inch",
+            "Active Buzzer",
+            "Type-C Breakout"
+        ],
+        "difficulty": "Hard"
+    },
+    {
+        "id": "esp32-s3-screen",
+        "name": "Racetrix Display S3",
+        "version": "v1.0",
+        "description": "带屏显的一体化方案，支持实时显示圈速差。",
+        "author": "Racetrix Lab",
+        "github": "https://github.com/your-repo/s3-display",
+        "core": {
+            "type": "MCU",
+            "model": "ESP32-S3 (Built-in LCD)"
+        },
+        "gpsOptions": [
+            "Beitian BN-880"
+        ],
+        "imuOptions": [
+            "MPU6050"
+        ],
+        "others": [
+            "LiPo Battery",
+            "3D Print Case"
+        ],
+        "difficulty": "Medium"
+    }
+]

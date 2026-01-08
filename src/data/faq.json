@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "category": "数据导出",
+        "question": "如何制作 CSV 数据文件？格式有什么要求？",
+        "answer": "推荐使用 RaceTrix 提供的标准 Python 脚本进行导出。如果您使用自定义设备，请确保 CSV 包含表头，且必须包含 'Lat' (纬度) 和 'Lon' (经度) 这两列。支持可选列：'Speed', 'Time', 'G_Lat', 'G_Lon'。",
+        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": 2,
+        "category": "硬件连接",
+        "question": "我的 GPS 定位显示 'No Fix' 怎么办？",
+        "answer": "1. 请确保您在户外开阔地带测试，室内无法接收 GPS 信号。\n2. 检查 GPS 模块的 TX/RX 线序是否接反（TX接RX，RX接TX）。\n3. 某些模块冷启动需要 1-2 分钟，请耐心等待模块上的 PPS 灯闪烁。",
+        "image": ""
+    },
+    {
+        "id": 3,
+        "category": "APP 设置",
+        "question": "如何连接 RaceChrono APP？",
+        "answer": "在 RaceChrono 中点击 '设置' -> '添加新设备' -> 选择 'Bluetooth LE'。在扫描列表中找到名为 'RaceTrix_Core' 的设备并连接。连接成功后，记得在设置中开启 '使用外部 GPS'。",
+        "image": "https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": 4,
+        "category": "数据分析",
+        "question": "为什么地图上的轨迹会飘移？",
+        "answer": "这是民用级 GPS 的常见现象。受大气电离层干扰或建筑物遮挡，普通 GPS 模块会有 1-5 米的误差。建议使用我们页面上的 '赛道校验' 功能，或升级到带有 RTK 功能的硬件方案。",
+        "image": ""
+    },
+    {
+        "id": 5,
+        "category": "硬件连接",
+        "question": "ESP32 烧录失败显示 Time Out？",
+        "answer": "请检查 USB 线是否具有数据传输功能（很多充电线只能充电）。另外，在点击烧录按钮时，尝试按住 ESP32 开发板上的 'BOOT' 按键 3 秒钟，强制进入下载模式。",
+        "image": ""
+    }
+]

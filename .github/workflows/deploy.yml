@@ -1,0 +1,58 @@
+name: Deploy Vite to GitHub Pages
+
+on:
+  # 触发条件：当推送到 main 分支时触发
+  push:
+    branches: ["main"]
+
+  # 允许在 Actions 页面手动触发
+  workflow_dispatch:
+
+# 设置权限，允许 GITHUB_TOKEN 修改仓库内容和部署 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 并发控制：如果还没部署完又有新提交，取消上一次部署，只部署最新的
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # 第一步：构建 (Build)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code (拉取代码)
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (设置 Node 环境)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # 建议使用稳定版本
+          cache: 'npm'     # 开启缓存，加速安装依赖
+
+      - name: Install dependencies (安装依赖)
+        run: npm ci # npm ci 比 npm install 更适合 CI 环境
+
+      - name: Build Project (构建项目)
+        run: npm run build
+
+      - name: Upload artifact (上传构建产物)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Vite 默认构建输出目录是 dist，如果你的不同，请修改这里
+          path: ./dist
+
+  # 第二步：部署 (Deploy)
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build # 依赖 build 任务完成后才执行
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages (部署到 GitHub Pages)
+        id: deployment
+        uses: actions/deploy-pages@v4
