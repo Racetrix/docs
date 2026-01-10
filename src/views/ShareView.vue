@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-// 导入两个数据文件
 import rawLocationData from '../data/locations.json'
 import rawTrackData from '../data/tracks.json'
 
@@ -8,21 +7,16 @@ import rawTrackData from '../data/tracks.json'
 const locationData = rawLocationData
 const mockTracks = rawTrackData
 
-// --- 状态变量 ---
 const selectedProvince = ref("全部")
 const selectedCity = ref("")
 const searchQuery = ref("")
 
-// --- 计算属性：城市列表 ---
 const availableCities = computed(() => {
     if (selectedProvince.value === "全部") return []
     return locationData[selectedProvince.value] || []
 })
 
-// ... watch 和 filteredTracks 的逻辑完全保持不变 ...
-watch(selectedProvince, () => {
-    selectedCity.value = ""
-})
+watch(selectedProvince, () => { selectedCity.value = "" })
 
 const filteredTracks = computed(() => {
     return mockTracks.filter(track => {
@@ -37,6 +31,22 @@ const filteredTracks = computed(() => {
 
 <template>
     <div class="share-page">
+
+        <div class="submission-banner">
+            <div class="banner-content">
+                <div class="banner-text">
+                    <span class="icon">📡</span>
+                    <span>
+                        <strong>开源共建计划：</strong>
+                        如果您制作了高质量的赛道数据 (.json)，欢迎提交至官方仓库或发送邮件，让全球车手挑战您的记录。
+                    </span>
+                </div>
+                <a href="mailto:submit@racetrix.com" class="btn-submit">
+                    提交数据 <span class="arrow">-></span>
+                </a>
+            </div>
+        </div>
+
         <div class="filter-hud">
             <div class="hud-container">
                 <div class="filter-group">
@@ -86,21 +96,14 @@ const filteredTracks = computed(() => {
                         </div>
                         <div class="loc-tag">{{ track.city }}</div>
                     </div>
-
                     <div class="card-body">
                         <h4 class="track-name">{{ track.name }}</h4>
-
                         <div class="track-meta">
-                            <div class="meta-item">
-                                <span class="label">长度</span>
-                                <span class="val">{{ track.length }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="label">弯道</span>
-                                <span class="val">{{ track.corners }}</span>
-                            </div>
+                            <div class="meta-item"><span class="label">长度</span><span class="val">{{ track.length
+                                    }}</span></div>
+                            <div class="meta-item"><span class="label">弯道</span><span class="val">{{ track.corners
+                                    }}</span></div>
                         </div>
-
                         <div class="card-footer">
                             <div class="author-info">
                                 <div class="avatar-placeholder">{{ track.author[0] }}</div>
@@ -109,9 +112,7 @@ const filteredTracks = computed(() => {
                                     <span class="date">{{ track.createTime }}</span>
                                 </div>
                             </div>
-                            <div class="stats">
-                                ⬇ {{ track.downloads }}
-                            </div>
+                            <div class="stats">⬇ {{ track.downloads }}</div>
                         </div>
                     </div>
                 </div>
@@ -130,11 +131,87 @@ const filteredTracks = computed(() => {
     min-height: 100vh;
     background: #0a0a0a;
     padding-top: 80px;
-    /* 避让 Navbar */
     box-sizing: border-box;
 }
 
-/* --- 1. HUD 筛选栏 --- */
+/* --- [新增] 提交横幅样式 --- */
+.submission-banner {
+    background: rgba(16, 16, 16, 0.95);
+    border-bottom: 1px solid #333;
+    /* 左侧加一条绿线，增加科技感 */
+    border-left: 4px solid var(--race-green);
+    padding: 12px 0;
+    margin-bottom: 0;
+}
+
+.banner-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.banner-text {
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.banner-text .icon {
+    font-size: 1.1rem;
+}
+
+.banner-text strong {
+    color: #fff;
+}
+
+.btn-submit {
+    background: transparent;
+    color: var(--race-green);
+    border: 1px solid var(--race-green);
+    padding: 6px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-submit:hover {
+    background: var(--race-green);
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
+}
+
+.btn-submit .arrow {
+    margin-left: 5px;
+    transition: margin-left 0.3s;
+}
+
+.btn-submit:hover .arrow {
+    margin-left: 10px;
+}
+
+/* 手机端适配：横幅内容换行 */
+@media (max-width: 768px) {
+    .banner-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .banner-text {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* --- 原有样式保持不变 --- */
 .filter-hud {
     background: #111;
     border-bottom: 1px solid #333;
@@ -146,13 +223,11 @@ const filteredTracks = computed(() => {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 24px;
-    /* 增加到 24px */
     display: flex;
     gap: 30px;
     align-items: flex-end;
     flex-wrap: wrap;
     box-sizing: border-box;
-    /* 关键 */
 }
 
 .filter-group {
@@ -168,7 +243,6 @@ const filteredTracks = computed(() => {
     letter-spacing: 1px;
 }
 
-/* 科技感输入框/下拉框 */
 .tech-select,
 .tech-input {
     background: #000;
@@ -177,7 +251,6 @@ const filteredTracks = computed(() => {
     padding: 10px 15px;
     font-size: 0.95rem;
     border-radius: 0;
-    /* 硬朗直角 */
     min-width: 180px;
     outline: none;
     transition: all 0.3s;
@@ -193,8 +266,6 @@ const filteredTracks = computed(() => {
     margin-left: auto;
 }
 
-/* 搜索框推到最右 */
-
 .input-wrapper {
     position: relative;
     display: flex;
@@ -207,14 +278,11 @@ const filteredTracks = computed(() => {
     color: #666;
 }
 
-/* --- 2. 网格布局区 --- */
 .track-grid-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 24px 40px;
-    /* 上0，左右24，下40 */
     box-sizing: border-box;
-    /* 关键 */
 }
 
 .grid-header {
@@ -251,11 +319,9 @@ const filteredTracks = computed(() => {
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    /* 自适应列 */
     gap: 30px;
 }
 
-/* --- 3. 赛道卡片 --- */
 .track-card {
     background: #161616;
     border: 1px solid #333;
@@ -270,7 +336,6 @@ const filteredTracks = computed(() => {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* 图片缩略图 */
 .card-thumb {
     height: 180px;
     width: 100%;
@@ -335,7 +400,6 @@ const filteredTracks = computed(() => {
     transform: translateY(0);
 }
 
-/* 卡片内容 */
 .card-body {
     padding: 15px;
 }
@@ -419,7 +483,6 @@ const filteredTracks = computed(() => {
     font-family: monospace;
 }
 
-/* 空状态 */
 .empty-state {
     text-align: center;
     padding: 80px 0;
@@ -436,17 +499,12 @@ const filteredTracks = computed(() => {
     text-decoration: none;
 }
 
-/* 响应式 */
 @media (max-width: 768px) {
     .hud-container {
         flex-direction: column;
         align-items: stretch;
         gap: 15px;
         padding: 20px 24px;
-    }
-
-    .share-page {
-        padding-top: 80px;
     }
 
     .search-group {

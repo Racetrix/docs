@@ -44,7 +44,7 @@ const getGBallPos = (gLat, gLon) => {
 
         <div class="sessions-container">
             <div v-if="sessions.length === 0 && !isProcessing" class="empty-state">
-                1. 加载赛道 (可选)<br>2. 加载车辆 CSV
+                1. 加载赛道 JSON (定义起终点)<br>2. 加载车辆 CSV (自动剪裁)
             </div>
 
             <div v-for="(session, idx) in sessions" :key="session.id" class="car-card"
@@ -52,8 +52,8 @@ const getGBallPos = (gLat, gLon) => {
                 <div class="car-info-row">
                     <span class="car-name" :style="{ color: session.color }">{{ session.name }}</span>
                     <div class="controls">
+                        <span v-if="session.isCropped" class="tag-lap">LAP MATCHED</span>
                         <span v-if="referenceTrack && !session.isValid" class="tag-invalid">OFF TRACK</span>
-                        <span v-if="referenceTrack && session.isValid" class="tag-valid">VALID LAP</span>
                         <button class="btn-close" @click="emit('removeSession', idx)">×</button>
                     </div>
                 </div>
@@ -85,19 +85,19 @@ const getGBallPos = (gLat, gLon) => {
                                 top: getGBallPos(session.currentFrame.standardData?.gLat || 0, session.currentFrame.standardData?.gLon || 0).y + '%',
                                 backgroundColor: session.color
                             }"></div>
-                            <div class="g-val-text">
-                                X:{{ (session.currentFrame.standardData?.gLat || 0).toFixed(1) }}
-                                Y:{{ (session.currentFrame.standardData?.gLon || 0).toFixed(1) }}
-                            </div>
+                            <div class="g-val-text">X:{{ (session.currentFrame.standardData?.gLat || 0).toFixed(1) }}
+                                Y:{{ (session.currentFrame.standardData?.gLon || 0).toFixed(1) }}</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="status-row">
-                    <div class="fix-badge" :class="{ 'fix-ok': session.currentFrame.standardData?.fix > 0 }">
-                        FIX: {{ session.currentFrame.standardData?.fix || '-' }}
+                    <div class="lap-time-box">
+                        <span class="label">LAP TIME:</span>
+                        <span class="val">{{ formatTime(session.duration) }}</span>
                     </div>
-                    <div class="time-stamp">{{ formatTime(session.currentFrame.relTime || 0) }}</div>
+
+                    <div class="time-stamp">T+ {{ formatTime(session.currentFrame.relTime || 0) }}</div>
                 </div>
 
                 <div class="raw-data-grid">
@@ -113,7 +113,46 @@ const getGBallPos = (gLat, gLon) => {
 </template>
 
 <style scoped>
-/* 侧边栏专属样式 */
+/* 保持原有样式，新增以下部分 */
+
+.tag-lap {
+    background: #0984e3;
+    color: #fff;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    background: #222;
+    padding: 5px 8px;
+    border-radius: 4px;
+}
+
+.lap-time-box {
+    display: flex;
+    gap: 5px;
+}
+
+.lap-time-box .label {
+    color: #888;
+    font-weight: bold;
+}
+
+.lap-time-box .val {
+    color: var(--race-green);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* 其他样式复用之前的... */
 .telemetry-sidebar {
     width: 420px;
     background: #111;
@@ -242,15 +281,6 @@ const getGBallPos = (gLat, gLon) => {
     font-weight: bold;
 }
 
-.tag-valid {
-    background: #2ecc71;
-    color: #000;
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    border-radius: 2px;
-    font-weight: bold;
-}
-
 .btn-close {
     background: none;
     border: none;
@@ -367,26 +397,6 @@ const getGBallPos = (gLat, gLon) => {
     color: #666;
     font-family: monospace;
     white-space: nowrap;
-}
-
-.status-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 0.75rem;
-    font-family: monospace;
-}
-
-.fix-badge {
-    padding: 2px 6px;
-    background: #333;
-    color: #888;
-    border-radius: 2px;
-}
-
-.fix-badge.fix-ok {
-    background: rgba(0, 255, 157, 0.2);
-    color: var(--race-green);
 }
 
 .time-stamp {

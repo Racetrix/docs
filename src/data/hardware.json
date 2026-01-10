@@ -1,77 +1,54 @@
 [
     {
-        "id": "esp32-basic",
-        "name": "Racetrix Core / ESP32",
-        "version": "v1.2",
-        "description": "入门首选方案，成本低廉，支持蓝牙直连 RaceChrono。",
-        "author": "Lition",
-        "github": "https://github.com/your-repo/esp32-core",
+        "id": "rt-bridge",
+        "name": "RT-Bridge",
+        "version": "Lite v1.0",
+        "description": "极简主义的蓝牙 GPS 桥接器。利用 ESP32 的蓝牙串口 (SPP) 功能，将 GPS 模块的原始 NMEA 数据无损透传给 RaceChrono APP，低成本、低延迟。",
+        "author": "RaceTrix",
+        "github": "#",
         "core": {
             "type": "MCU",
-            "model": "ESP32-WROOM-32"
+            "model": "ESP-WROOM-32"
         },
         "gpsOptions": [
-            "Beitian BN-180",
             "Beitian BN-220",
-            "Ublox NEO-6M"
+            "ATGM336H",
+            "Ublox M8N"
         ],
         "imuOptions": [
-            "MPU6050 (推荐)",
-            "ICM-20948"
+            "None (Phone IMU)"
         ],
         "others": [
-            "SD Card Module",
-            "LED Status Light"
+            "Bluetooth Classic (SPP)",
+            "Type-C Power",
+            "< 10ms Latency"
         ],
         "difficulty": "Easy"
     },
     {
-        "id": "stm32-pro",
-        "name": "Racetrix Pro / STM32",
-        "version": "v2.0 Beta",
-        "description": "高性能方案，更高的采样率和更精准的时间同步。",
-        "author": "GeekDriver",
-        "github": "https://github.com/your-repo/stm32-pro",
+        "id": "rt-dash",
+        "name": "RT-Dash",
+        "version": "Pro v2.0",
+        "description": "旗舰级独立赛道电脑。集成 2.8寸触摸屏、10代高精度 GPS、BNO055 姿态传感器与 SD 卡。支持脱机记录数据，同时兼容 APP 实时遥测。",
+        "author": "RaceTrix Lab",
+        "github": "#",
         "core": {
             "type": "MCU",
-            "model": "STM32F401 / F411"
+            "model": "ESP32-S3 (Dual Core)"
         },
         "gpsOptions": [
-            "Ublox M10 (25Hz)",
+            "Ublox M10 (Gen 10)",
             "Beitian BN-880"
         ],
         "imuOptions": [
-            "BNO055 (9轴)",
-            "BMI160"
+            "BNO055 (9-Axis)",
+            "ICM-42688"
         ],
         "others": [
-            "OLED 0.96 inch",
-            "Active Buzzer",
-            "Type-C Breakout"
+            "2.8\" IPS Touch Screen",
+            "MicroSD Logging",
+            "BLE 5.0 + WiFi"
         ],
         "difficulty": "Hard"
-    },
-    {
-        "id": "esp32-s3-screen",
-        "name": "Racetrix Display S3",
-        "version": "v1.0",
-        "description": "带屏显的一体化方案，支持实时显示圈速差。",
-        "author": "Racetrix Lab",
-        "github": "https://github.com/your-repo/s3-display",
-        "core": {
-            "type": "MCU",
-            "model": "ESP32-S3 (Built-in LCD)"
-        },
-        "gpsOptions": [
-            "Beitian BN-880"
-        ],
-        "imuOptions": [
-            "MPU6050"
-        ],
-        "others": [
-            "LiPo Battery",
-            "3D Print Case"
-        ],
-        "difficulty": "Medium"
     }
 ]
