@@ -6,17 +6,15 @@ const activeId = ref(null)
 const searchQuery = ref("")
 const activeCategory = ref("全部")
 
-// 1. 自动提取所有唯一的分类，并加上 '全部'
+// 自动提取分类
 const categories = computed(() => {
     const uniqueCats = [...new Set(faqData.map(item => item.category))]
     return ['全部', ...uniqueCats]
 })
 
-// 2. 核心过滤逻辑：先看搜索，再看分类
+// 筛选逻辑
 const filteredData = computed(() => {
     let data = faqData
-
-    // 如果有搜索词，优先匹配搜索词（并在全部分类中搜索）
     if (searchQuery.value.trim()) {
         const query = searchQuery.value.toLowerCase()
         return data.filter(item =>
@@ -24,16 +22,12 @@ const filteredData = computed(() => {
             item.answer.toLowerCase().includes(query)
         )
     }
-
-    // 如果没有搜索词，则按分类筛选
     if (activeCategory.value !== '全部') {
         data = data.filter(item => item.category === activeCategory.value)
     }
-
     return data
 })
 
-// 3. 监听搜索：一旦用户开始搜索，自动切回“全部”，防止用户在错误的分类下搜不到东西
 watch(searchQuery, (newVal) => {
     if (newVal) activeCategory.value = '全部'
 })
@@ -44,8 +38,16 @@ const toggleItem = (id) => {
 
 const setCategory = (cat) => {
     activeCategory.value = cat
-    searchQuery.value = "" // 切换分类时清空搜索
-    activeId.value = null // 收起所有展开项
+    searchQuery.value = ""
+    activeId.value = null
+
+    if (window.innerWidth < 768) {
+        const listEl = document.querySelector('.right-panel')
+        if (listEl) {
+            const top = listEl.getBoundingClientRect().top + window.scrollY - 80
+            window.scrollTo({ top, behavior: 'smooth' })
+        }
+    }
 }
 </script>
 
@@ -55,47 +57,50 @@ const setCategory = (cat) => {
 
             <aside class="left-panel">
                 <div class="sticky-wrapper">
-                    <h1 class="page-title">HELP CENTER</h1>
+                    <div class="header-group">
+                        <h1 class="page-title">HELP CENTER</h1>
+                        <p class="page-desc desktop-only">
+                            硬件连接、APP设置及数据导出的常见问题解答。
+                        </p>
+                    </div>
 
                     <div class="search-box">
                         <span class="search-icon">🔍</span>
-                        <input type="text" v-model="searchQuery" placeholder="搜索关键词..." class="search-input" />
+                        <input type="text" v-model="searchQuery" placeholder="搜索问题..." class="search-input" />
                     </div>
 
-                    <div class="category-nav">
-                        <div class="nav-label">CATEGORIES</div>
-                        <button v-for="cat in categories" :key="cat" class="cat-btn"
-                            :class="{ 'active': activeCategory === cat }" @click="setCategory(cat)">
-                            {{ cat }}
-                            <span class="count" v-if="cat === '全部'">{{ faqData.length }}</span>
-                            <span class="count" v-else>{{faqData.filter(i => i.category === cat).length}}</span>
-                        </button>
+                    <div class="category-wrapper">
+                        <div class="category-nav">
+                            <button v-for="cat in categories" :key="cat" class="cat-btn"
+                                :class="{ 'active': activeCategory === cat }" @click="setCategory(cat)">
+                                {{ cat }}
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="contact-card">
-                        <h3>硬件定制服务</h3>
-                        <p>需要更高精度的 RTK 模块或整机定制？</p>
+                    <div class="contact-card desktop-only">
+                        <h3>定制服务</h3>
+                        <p>需要 RTK 模块或整机定制？</p>
                         <a href="mailto:support@racetrix.com" class="btn-email">联系工程师</a>
                     </div>
                 </div>
             </aside>
 
             <main class="right-panel">
-
                 <div class="section-header">
                     <h2>{{ searchQuery ? '搜索结果' : activeCategory }}</h2>
-                    <span class="result-count">{{ filteredData.length }} 个相关问题</span>
+                    <span class="result-count">{{ filteredData.length }} 个问题</span>
                 </div>
 
                 <div v-if="filteredData.length === 0" class="empty-result">
-                    😕 没有找到相关内容，请尝试其他关键词。
+                    未找到相关内容
                 </div>
 
                 <div class="faq-list">
                     <div v-for="item in filteredData" :key="item.id" class="faq-item"
                         :class="{ 'is-open': activeId === item.id }">
                         <div class="faq-head" @click="toggleItem(item.id)">
-                            <div class="head-left">
+                            <div class="head-content">
                                 <span class="cat-tag" v-if="activeCategory === '全部'">{{ item.category }}</span>
                                 <span class="question">{{ item.question }}</span>
                             </div>
@@ -106,7 +111,7 @@ const setCategory = (cat) => {
                             <div class="body-inner">
                                 <p class="answer">{{ item.answer }}</p>
                                 <div v-if="item.image" class="img-box">
-                                    <img :src="item.image" loading="lazy" alt="Solution Image" />
+                                    <img :src="item.image" loading="lazy" alt="Solution" />
                                 </div>
                             </div>
                         </div>
@@ -119,27 +124,37 @@ const setCategory = (cat) => {
 </template>
 
 <style scoped>
+/* 1. 全局重置，防止 padding 撑大 */
+* {
+    box-sizing: border-box;
+}
+
 .faq-page {
     min-height: 100vh;
     background-color: #0a0a0a;
     padding-top: 100px;
     padding-bottom: 60px;
-    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
+    /* 兜底：强制隐藏横向滚动条 */
 }
 
+/* 2. 桌面端 Grid 布局 */
 .layout-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 320px 1fr;
-    /* 左侧宽度微调 */
+    grid-template-columns: 300px 1fr;
     gap: 60px;
+    width: 100%;
 }
 
-/* --- 左侧面板 --- */
+/* --- 左侧样式 --- */
 .left-panel {
     position: relative;
+    z-index: 10;
+    min-width: 0;
 }
 
 .sticky-wrapper {
@@ -150,24 +165,30 @@ const setCategory = (cat) => {
 .page-title {
     font-size: 2.5rem;
     color: #fff;
-    margin: 0 0 25px 0;
-    letter-spacing: 1px;
+    margin: 0 0 10px 0;
     font-weight: 800;
+    line-height: 1.1;
 }
 
-/* 搜索框 */
+.page-desc {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
 .search-box {
     position: relative;
     margin-bottom: 30px;
+    width: 100%;
 }
 
 .search-icon {
     position: absolute;
-    left: 15px;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: #666;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .search-input {
@@ -176,19 +197,18 @@ const setCategory = (cat) => {
     border: 1px solid #333;
     padding: 12px 12px 12px 40px;
     color: #fff;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    border-radius: 6px;
     outline: none;
     transition: all 0.3s;
-    box-sizing: border-box;
+    min-width: 0;
+    /* 防止 Flex/Grid 中 input 撑开 */
 }
 
 .search-input:focus {
     border-color: var(--race-green);
-    box-shadow: 0 0 10px rgba(0, 255, 157, 0.1);
+    background: #000;
 }
 
-/* [新增] 分类导航 */
 .category-nav {
     display: flex;
     flex-direction: column;
@@ -196,27 +216,15 @@ const setCategory = (cat) => {
     margin-bottom: 40px;
 }
 
-.nav-label {
-    color: #555;
-    font-size: 0.7rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-    letter-spacing: 1px;
-}
-
 .cat-btn {
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     text-align: left;
     color: #888;
     padding: 10px 15px;
     cursor: pointer;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-radius: 6px;
     transition: all 0.2s;
-    font-size: 0.95rem;
 }
 
 .cat-btn:hover {
@@ -225,28 +233,12 @@ const setCategory = (cat) => {
 }
 
 .cat-btn.active {
-    background: #1a1a1a;
+    background: rgba(0, 255, 157, 0.1);
     color: var(--race-green);
+    border-color: var(--race-green);
     font-weight: bold;
-    border-left: 3px solid var(--race-green);
 }
 
-.count {
-    background: #222;
-    color: #666;
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    border-radius: 10px;
-    min-width: 20px;
-    text-align: center;
-}
-
-.cat-btn.active .count {
-    background: var(--race-green);
-    color: #000;
-}
-
-/* 联系卡片 */
 .contact-card {
     background: #111;
     border: 1px dashed #333;
@@ -264,7 +256,6 @@ const setCategory = (cat) => {
     color: #666;
     font-size: 0.8rem;
     margin-bottom: 15px;
-    line-height: 1.4;
 }
 
 .btn-email {
@@ -276,17 +267,13 @@ const setCategory = (cat) => {
     text-decoration: none;
     font-size: 0.8rem;
     font-weight: bold;
-    transition: 0.2s;
 }
 
-.btn-email:hover {
-    background: var(--race-green);
-    color: #000;
-}
-
-/* --- 右侧面板 --- */
+/* --- 右侧样式 --- */
 .right-panel {
     min-height: 50vh;
+    min-width: 0;
+    /* 关键：防止 Grid 子元素被宽图片撑开 */
 }
 
 .section-header {
@@ -296,6 +283,8 @@ const setCategory = (cat) => {
     margin-bottom: 20px;
     border-bottom: 1px solid #222;
     padding-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .section-header h2 {
@@ -306,12 +295,12 @@ const setCategory = (cat) => {
 
 .result-count {
     color: #666;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .empty-result {
     color: #666;
-    padding-top: 20px;
+    padding: 20px 0;
     text-align: center;
 }
 
@@ -324,9 +313,10 @@ const setCategory = (cat) => {
 .faq-item {
     background: #161616;
     border: 1px solid #333;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
     transition: border-color 0.3s;
+    width: 100%;
 }
 
 .faq-item.is-open {
@@ -340,26 +330,22 @@ const setCategory = (cat) => {
     justify-content: space-between;
     align-items: center;
     background: #1a1a1a;
-    transition: background 0.2s;
 }
 
-.faq-head:hover {
-    background: #222;
-}
-
-.head-left {
+.head-content {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 10px;
+    min-width: 0;
+    flex: 1;
 }
 
 .cat-tag {
     font-size: 0.7rem;
-    background: #333;
-    color: #aaa;
-    padding: 2px 6px;
-    border-radius: 2px;
-    white-space: nowrap;
+    color: var(--race-green);
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .question {
@@ -367,6 +353,7 @@ const setCategory = (cat) => {
     font-weight: bold;
     font-size: 1rem;
     line-height: 1.4;
+    word-wrap: break-word;
 }
 
 .toggle-icon {
@@ -374,7 +361,7 @@ const setCategory = (cat) => {
     height: 12px;
     position: relative;
     flex-shrink: 0;
-    margin-left: 15px;
+    margin-left: 10px;
 }
 
 .toggle-icon::before,
@@ -399,7 +386,7 @@ const setCategory = (cat) => {
 }
 
 .faq-item.is-open .toggle-icon::after {
-    transform: translate(-50%, -50%) rotate(90deg);
+    transform: rotate(90deg);
     opacity: 0;
 }
 
@@ -415,7 +402,7 @@ const setCategory = (cat) => {
 }
 
 .faq-item.is-open .faq-body {
-    max-height: 1000px;
+    max-height: 3000px;
 }
 
 .body-inner {
@@ -423,61 +410,128 @@ const setCategory = (cat) => {
     border-top: 1px solid #222;
 }
 
+/* 3. 强制内容换行 */
 .answer {
     color: #ccc;
     line-height: 1.7;
     white-space: pre-line;
     margin: 0;
+    font-size: 0.95rem;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    /* 强制长网址换行 */
+    max-width: 100%;
 }
 
+/* 4. 图片完全自适应 */
 .img-box {
     margin-top: 15px;
-    border: 1px solid #333;
     border-radius: 4px;
     overflow: hidden;
+    border: 1px solid #333;
+    width: 100%;
+    max-width: 100%;
 }
 
 .img-box img {
     width: 100%;
+    height: auto;
     display: block;
 }
 
-/* --- 移动端适配 --- */
+
+/* --- 📱 移动端适配 (900px以下) --- */
 @media (max-width: 900px) {
+    .faq-page {
+        padding-top: 80px;
+    }
+
+    /* 5. 关键修改：取消 Grid，改用 Block 布局 */
+    /* Grid 在移动端容易因为 min-content 撑开宽度，Block 更安全 */
     .layout-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        display: block;
+        padding: 0 20px;
+    }
+
+    /* 头部区域 */
+    .left-panel {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #222;
+        padding-bottom: 10px;
+        width: 100%;
     }
 
     .sticky-wrapper {
         position: static;
     }
 
-    .category-nav {
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+    .page-title {
+        font-size: 1.8rem;
+        text-align: left;
     }
 
-    .cat-btn {
-        white-space: nowrap;
-        border: 1px solid #333;
-        flex-shrink: 0;
-    }
-
-    .cat-btn.active {
-        border-left: 1px solid #333;
-        border-color: var(--race-green);
-        background: rgba(0, 255, 157, 0.1);
-    }
-
-    .contact-card {
+    .desktop-only {
         display: none;
     }
 
-    .section-header {
-        margin-top: 10px;
+    .search-box {
+        margin-bottom: 15px;
+    }
+
+    /* 分类导航容器：处理滚动 */
+    .category-wrapper {
+        width: 100%;
+        overflow: hidden;
+        /* 防止父容器撑开 */
+    }
+
+    .category-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Firefox */
+        width: 100%;
+    }
+
+    .category-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Chrome/Safari */
+
+    .cat-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+        border: 1px solid #333;
+        padding: 6px 14px;
+        background: #111;
+        font-size: 0.85rem;
+    }
+
+    .cat-btn.active {
+        background: var(--race-green);
+        color: #000;
+    }
+
+    /* 列表调整 */
+    .right-panel {
+        width: 100%;
+    }
+
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .faq-head {
+        padding: 15px;
+    }
+
+    .question {
+        font-size: 0.95rem;
     }
 }
 </style>
